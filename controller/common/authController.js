@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../config");
 const { models } = require("../../models/definations");
 const bcrypt = require("bcrypt");
-
-let tokens = [];
+const tokens = [];
+const config = require("../../config");
+const { use } = require("../../app");
 
 function generateAccessToken(user) {
   return jwt.sign(user, config.jwt);
@@ -26,23 +26,23 @@ module.exports = {
       next();
     });
   },
-  login: async (req, res) => {
+  login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
-
       let user = await models.user.findOne({
         where: {
           email: email,
         },
       });
-      console.log(user);
       user = user?.dataValues;
+      console.log("actual user", user);
+
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateAccessToken(user);
         tokens.push(token);
         res.json({ token: token });
       } else {
-        res.status(404).send("user does not exists");
+        res.status(404).send("User does not Exists");
       }
     } catch (e) {
       console.log(e);

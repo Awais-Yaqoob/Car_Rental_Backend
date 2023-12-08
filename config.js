@@ -7,4 +7,5 @@ module.exports = {
     port: 5432,
     dialect: "postgres",
   },
+  jwt: "$2b$10$VtSvhBottGsqAJYyiMlQve8GiVvKqeqX5m2IP0K5HvdfB/agjlQsm",
 };
