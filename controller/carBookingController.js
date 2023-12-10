@@ -17,10 +17,25 @@ const getBookingById = async (req, res) => {
 };
 
 const createBooking = async (req, res) => {
-  const bookingData = req.body;
-  const newBooking = await bookingService.createBooking(bookingData);
-  res.status(201).json(newBooking);
+  try {
+    const bookingData = req.body;
+    await bookingService.createBooking(bookingData);
+    res.status(201).json({ message: "Booking created successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
+
+// const createBooking = async (req, res) => {
+//   try {
+//     const bookingData = req.body;
+//     const newBooking = await bookingService.createBooking(bookingData);
+//     res.status(201).json(newBooking);
+//   } catch (error) {
+//     console.error("Error creating booking:", error);
+//     res.status(500).json({ message: "Error creating booking" });
+//   }
+// };
 
 const deleteBooking = async (req, res) => {
   const { id } = req.params;
