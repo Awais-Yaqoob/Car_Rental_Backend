@@ -15,7 +15,7 @@ cars.belongsTo(categories, {
   onDelete: "CASCADE",
   foreignKey: "categoryId",
 });
-bookings.hasOne(cars, {
+bookings.belongsTo(cars, {
   onUpdate: "CASCADE",
   onDelete: "CASCADE",
   foreignKey: "carId",

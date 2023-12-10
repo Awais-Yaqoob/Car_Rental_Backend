@@ -1,0 +1,79 @@
+// services/carBookingServices.js
+const { models } = require("../models/definations");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "your-email@gmail.com", // replace with your email
+    pass: "your-email-password", // replace with your email password
+  },
+});
+
+const getAllBookings = async () => {
+  return await models.bookings.findAll({
+    include: [
+      {
+        model: models.cars,
+        attributes: ["name"],
+      },
+    ],
+  });
+};
+
+const getBookingById = async (id) => {
+  return await models.bookings.findByPk(id, {
+    include: [
+      {
+        model: models.cars,
+        attributes: ["name"],
+      },
+    ],
+  });
+};
+
+const createBooking = async (bookingData) => {
+  try {
+    const newBooking = await models.bookings.create(bookingData);
+
+    // Send booking confirmation email
+    await sendBookingConfirmationEmail(newBooking);
+
+    return newBooking;
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    throw error;
+  }
+};
+
+const deleteBooking = async (id) => {
+  return await models.bookings.destroy({ where: { id } });
+};
+
+const sendBookingConfirmationEmail = async (booking) => {
+  const mailOptions = {
+    from: "your-email@gmail.com", // replace with your email
+    to: booking.email,
+    subject: "Car Booking Confirmation",
+    text: `Thank you for booking with us. Your booking details:\n${JSON.stringify(
+      booking,
+      null,
+      2
+    )}`,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw error;
+  }
+};
+
+module.exports = {
+  getAllBookings,
+  getBookingById,
+  createBooking,
+  deleteBooking,
+};
